@@ -1,8 +1,5 @@
 <template>
-  <main>
-    Logged in User 100%
-  </main>
+    <h1>You aren't login!</h1>
 </template>
-
 <script setup lang="ts">
 </script>

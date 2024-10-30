@@ -1,8 +1,8 @@
 <template>
-  <main>
-    Logged in User 100%
-  </main>
+    <Header />
+    <div>
+        <slot />
+    </div>
 </template>
-
 <script setup lang="ts">
 </script>

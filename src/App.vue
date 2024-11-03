@@ -1,24 +1,17 @@
 <template>
-  <Header />
-  <div class="application page-container">
-    <RouterView />
+  <div class="dark">
+    <Header v-if="isAuthenticated" />
+    <div class="application page-container">
+      <RouterView />
+    </div>
   </div>
 </template>
 
 <script setup lang="ts">
 import { RouterView } from 'vue-router'
 import Header from '@/components/page/header/Header.vue';
+
+import { useAuthStore } from '@/stores/auth';
+
+const { isAuthenticated } = useAuthStore()
 </script>
-
-<style scoped>
-.header {
-  height: 64px;
-  display: flex;
-  align-items: center;
-}
-
-.page-container {
-  max-width: 1400px;
-  margin: 0 auto;
-}
-</style>

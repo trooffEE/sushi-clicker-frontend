@@ -1,6 +1,6 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import HomeView from '../views/HomeView.vue'
-import LoginView from '@/views/LoginView.vue'
+import AuthView from '@/views/AuthView.vue'
 import { useAuthStore } from '@/stores/auth'
 
 const router = createRouter({
@@ -12,28 +12,28 @@ const router = createRouter({
       component: HomeView,
     },
     {
-      path: '/login',
-      name: 'login',
-      component: LoginView,
+      path: '/auth',
+      name: 'auth',
+      component: AuthView,
     },
   ],
 })
 
-router.beforeEach(async (from, to) => {
+router.beforeEach(async from => {
   // canUserAccess() returns `true` or `false`
   // const canAccess = await canUserAccess(to)
-  const auth = useAuthStore();
-  if (auth.isAuthenticated && from.name === 'login') {
+  const auth = useAuthStore()
+  if (auth.isAuthenticated && from.name === 'auth') {
     return {
-      name: 'home'
+      name: 'home',
     }
   }
 
-  if (!auth.isAuthenticated && from.name !== 'login') {
-    return { 
-      name: 'login'
+  if (!auth.isAuthenticated && from.name !== 'auth') {
+    return {
+      name: 'auth',
     }
-  } 
+  }
 })
 
 export default router

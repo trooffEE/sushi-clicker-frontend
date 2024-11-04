@@ -46,9 +46,10 @@
     </Card>
 </template>
 <script setup lang="ts">
-import { ref, computed, KeepAlive } from 'vue';
+import { ref, computed } from 'vue';
 
 const isRegisterMode = ref(false);
+const { login } = useAuthStore();
 
 const texts = computed(() => {
     return {
@@ -87,13 +88,10 @@ import { Separator } from '@/components/ui/separator'
 import { toTypedSchema } from '@vee-validate/zod'
 import { useForm } from 'vee-validate'
 import { h } from 'vue'
-import * as z from 'zod'
+import { authZodSchema } from './validation/auth';
+import { useAuthStore } from '@/stores/auth';
 
-const formSchema = toTypedSchema(z.object({
-    email: z.string().email().max(50).email(),
-    password: z.string().min(6).max(30),
-    confirmPassword: z.string().min(6).max(30).optional(),
-}).refine((check) => {
+const formSchema = toTypedSchema(authZodSchema.refine((check) => {
     if (!isRegisterMode.value) {
         return true;
     }
@@ -104,16 +102,15 @@ const formSchema = toTypedSchema(z.object({
     path: ['confirmPassword']
 }))
 
-
 const { handleSubmit } = useForm({
     validationSchema: formSchema,
 })
 
-const onSubmit = handleSubmit((values) => {
-    console.log(values)
-    // toast({
-    //     title: 'You submitted the following values:',
-    //     description: h('pre', { class: 'mt-2 w-[340px] rounded-md bg-slate-950 p-4' }, h('code', { class: 'text-white' }, JSON.stringify(values, null, 2))),
-    // })
+const onSubmit = handleSubmit(async (values) => {
+    await login(values)
+    toast({
+        title: 'You submitted the following values:',
+        description: h('pre', { class: 'mt-2 w-[340px] rounded-md bg-slate-950 p-4' }, h('code', { class: 'text-white' }, JSON.stringify(values, null, 2))),
+    })
 })
 </script>

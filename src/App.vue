@@ -5,10 +5,12 @@
       <RouterView />
     </div>
   </div>
+  <Toaster />
 </template>
 
 <script setup lang="ts">
 import { RouterView } from 'vue-router'
+import Toaster from '@/components/ui/toast/Toaster.vue'
 import Header from '@/components/page/header/Header.vue';
 
 import { useAuthStore } from '@/stores/auth';

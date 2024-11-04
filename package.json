@@ -19,6 +19,7 @@
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.1.1",
     "lucide-vue-next": "^0.454.0",
+    "ofetch": "^1.4.1",
     "pinia": "^2.2.4",
     "radix-vue": "^1.9.8",
     "tailwind-merge": "^2.5.4",

@@ -19,11 +19,10 @@ const router = createRouter({
   ],
 })
 
-router.beforeEach(async from => {
-  // canUserAccess() returns `true` or `false`
-  // const canAccess = await canUserAccess(to)
+router.beforeEach(async (from, to) => {
   const auth = useAuthStore()
-  if (auth.isAuthenticated && from.name === 'auth') {
+  if (auth.isAuthenticated && from.redirectedFrom?.name !== 'home') {
+    console.log(from, to)
     return {
       name: 'home',
     }

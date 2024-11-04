@@ -9,7 +9,7 @@
             <form class="space-y-6" @submit="onSubmit">
                 <FormField v-slot="{ componentField }" name="email">
                     <FormItem>
-                        <FormLabel>Email</FormLabel>
+                        <FormLabel>Email:</FormLabel>
                         <FormControl>
                             <Input type="email" placeholder="example@mail.com" v-bind="componentField" />
                         </FormControl>
@@ -18,7 +18,17 @@
                 </FormField>
                 <FormField v-slot="{ componentField }" name="password">
                     <FormItem>
-                        <FormLabel>Password</FormLabel>
+                        <FormLabel>Password:</FormLabel>
+                        <FormControl>
+                            <Input type="password" placeholder="Type here!" v-bind="componentField" />
+                        </FormControl>
+                        <div></div>
+                        <FormMessage />
+                    </FormItem>
+                </FormField>
+                <FormField v-if="isRegisterMode" v-slot="{ componentField }" name="confirmPassword">
+                    <FormItem>
+                        <FormLabel>Confirm password:</FormLabel>
                         <FormControl>
                             <Input type="password" placeholder="Type here!" v-bind="componentField" />
                         </FormControl>
@@ -84,6 +94,10 @@ import * as z from 'zod'
 const formSchema = toTypedSchema(z.object({
     email: z.string().email().max(50).email(),
     password: z.string().min(6).max(30),
+    confirmPassword: z.string().min(6).max(30),
+    // TODO
+}).refine((check) => check.password !== check.confirmPassword && isRegisterMode.value, {
+    message: 'Please make sure \'Password\' and \'Confirm password\' match'
 }))
 
 

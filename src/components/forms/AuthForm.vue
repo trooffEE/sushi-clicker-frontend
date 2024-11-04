@@ -22,7 +22,6 @@
                         <FormControl>
                             <Input type="password" placeholder="Type here!" v-bind="componentField" />
                         </FormControl>
-                        <div></div>
                         <FormMessage />
                     </FormItem>
                 </FormField>
@@ -32,7 +31,6 @@
                         <FormControl>
                             <Input type="password" placeholder="Type here!" v-bind="componentField" />
                         </FormControl>
-                        <div></div>
                         <FormMessage />
                     </FormItem>
                 </FormField>
@@ -48,7 +46,7 @@
     </Card>
 </template>
 <script setup lang="ts">
-import { ref, computed } from 'vue';
+import { ref, computed, KeepAlive } from 'vue';
 
 const isRegisterMode = ref(false);
 
@@ -94,10 +92,16 @@ import * as z from 'zod'
 const formSchema = toTypedSchema(z.object({
     email: z.string().email().max(50).email(),
     password: z.string().min(6).max(30),
-    confirmPassword: z.string().min(6).max(30),
-    // TODO
-}).refine((check) => check.password !== check.confirmPassword && isRegisterMode.value, {
-    message: 'Please make sure \'Password\' and \'Confirm password\' match'
+    confirmPassword: z.string().min(6).max(30).optional(),
+}).refine((check) => {
+    if (!isRegisterMode.value) {
+        return true;
+    }
+
+    return check.password === check.confirmPassword;
+}, {
+    message: 'Please make sure \'Password\' and \'Confirm password\' match',
+    path: ['confirmPassword']
 }))
 
 
@@ -106,9 +110,10 @@ const { handleSubmit } = useForm({
 })
 
 const onSubmit = handleSubmit((values) => {
-    toast({
-        title: 'You submitted the following values:',
-        description: h('pre', { class: 'mt-2 w-[340px] rounded-md bg-slate-950 p-4' }, h('code', { class: 'text-white' }, JSON.stringify(values, null, 2))),
-    })
+    console.log(values)
+    // toast({
+    //     title: 'You submitted the following values:',
+    //     description: h('pre', { class: 'mt-2 w-[340px] rounded-md bg-slate-950 p-4' }, h('code', { class: 'text-white' }, JSON.stringify(values, null, 2))),
+    // })
 })
 </script>

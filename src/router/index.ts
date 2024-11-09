@@ -19,16 +19,15 @@ const router = createRouter({
   ],
 })
 
-router.beforeEach(async (from, to) => {
-  const auth = useAuthStore()
-  if (auth.isAuthenticated && from.redirectedFrom?.name !== 'home') {
-    console.log(from, to)
+router.beforeEach(async from => {
+  const aStore = useAuthStore()
+  if (aStore.isAuthenticated && from.redirectedFrom?.name !== 'home') {
     return {
       name: 'home',
     }
   }
 
-  if (!auth.isAuthenticated && from.name !== 'auth') {
+  if (!aStore.isAuthenticated && from.name !== 'auth') {
     return {
       name: 'auth',
     }

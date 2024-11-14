@@ -1,29 +1,47 @@
 import type { AuthZodSchemaType } from '@/components/forms/validation/auth'
-import { api, HTTP_STATUS_CODE } from '@/lib/api'
+import { api } from '@/lib/api'
 import { defineStore } from 'pinia'
 import { useToastStore } from './toast'
+import { ref } from 'vue'
 
-export const useAuthStore = defineStore('auth', {
-  state: () => ({
-    isAuthenticated: false,
-  }),
-  actions: {
-    async login(payload: AuthZodSchemaType) {
-      return api<undefined>('/auth/login', {
-        method: 'POST',
-        body: payload,
+export const useAuthStore = defineStore('auth', () => {
+  const { makeErrorAPIToast } = useToastStore()
+  const isAuthenticated = ref(false)
+
+  const test = () => {
+    return api('/private/test')
+      .then(data => {
+        makeErrorAPIToast(data.data)
       })
-    },
-    async register(payload: AuthZodSchemaType) {
-      return api('/auth/register', {
-        method: 'POST',
-        body: payload,
-      }).catch(err => {
-        if (err.status === HTTP_STATUS_CODE.ENTITY_CONFLUCTED) {
-          const { makeErrorAPIToast } = useToastStore()
-          makeErrorAPIToast(err.data)
-        }
+      .catch((err: { data: string }) => {
+        makeErrorAPIToast(err.data)
       })
-    },
-  },
+  }
+
+  const login = async (payload: AuthZodSchemaType) => {
+    return api('/auth/login', {
+      method: 'POST',
+      body: payload,
+    })
+      .then(data => {
+        localStorage.setItem('token', data.AccessToken)
+      })
+      .catch((err: { data: string }) => {
+        makeErrorAPIToast(err.data)
+      })
+  }
+
+  const register = async (payload: AuthZodSchemaType) => {
+    return api('/auth/register', {
+      method: 'POST',
+      body: payload,
+    }).catch((err: { data: string }) => makeErrorAPIToast(err.data))
+  }
+
+  return {
+    isAuthenticated,
+    login,
+    register,
+    test,
+  }
 })

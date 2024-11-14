@@ -100,5 +100,11 @@ const { handleSubmit } = useForm({ validationSchema: formSchema })
 const aStore = useAuthStore();
 const authFn = computed(() => isRegisterMode.value ? aStore.register : aStore.login);
 
-const onSubmit = handleSubmit(async (values) => authFn.value(values))
+const onSubmit = handleSubmit(async (values) => {
+  await authFn.value(values)
+
+  setTimeout(async () => {
+    await aStore.test();
+  }, 1500);
+})
 </script>

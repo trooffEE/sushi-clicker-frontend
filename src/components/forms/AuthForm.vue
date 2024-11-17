@@ -105,6 +105,6 @@ const onSubmit = handleSubmit(async (values) => {
 
   setTimeout(async () => {
     await aStore.test();
-  }, 1500);
+  }, 2500);
 })
 </script>

@@ -6,13 +6,14 @@ export enum HTTP_STATUS_CODE {
 }
 
 const APIBaseUrlDefault = import.meta.env.VITE_DEVELOPMENT
-  ? 'http://localho.st:3010/api'
+  ? 'http://localhost:3010/api'
   : ''
 const APIHeadersDefault = {
   Accept: 'application/json',
-  'Access-Control-Allow-Credentials': 'true',
-  'Access-Control-Allow-Origin': '*',
 }
+
+let isTokenRequestInProgress = false
+const pendingRequests = []
 
 export const api = ofetch.create({
   baseURL: APIBaseUrlDefault,
@@ -25,9 +26,28 @@ export const api = ofetch.create({
     )
   },
   onResponseError(_) {
-    if (_.response.status === HTTP_STATUS_CODE.TOKEN_EXPIRED) {
-      console.log(_.request)
-      ofetch(_.options.baseURL + '/auth/refresh-token')
+    const isLoginRequest = _.options.baseURL + '/auth/login' === _.request
+    if (isLoginRequest) {
+      return
+    }
+
+    if (
+      _.response.status === HTTP_STATUS_CODE.TOKEN_EXPIRED &&
+      !isTokenRequestInProgress
+    ) {
+      isTokenRequestInProgress = true
+      ofetch('/auth/refresh-token', {
+        headers: _.options.headers,
+        baseURL: _.options.baseURL,
+        credentials: _.options.credentials,
+      })
+        .then(response => {
+          localStorage.setItem('token', response.AccessToken)
+        })
+        .finally(() => (isTokenRequestInProgress = false))
     }
   },
+  retryStatusCodes: [HTTP_STATUS_CODE.TOKEN_EXPIRED],
+  retryDelay: 500,
+  retry: 1,
 })

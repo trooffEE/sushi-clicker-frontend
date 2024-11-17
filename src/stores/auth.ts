@@ -8,16 +8,6 @@ export const useAuthStore = defineStore('auth', () => {
   const { makeErrorAPIToast } = useToastStore()
   const isAuthenticated = ref(false)
 
-  const test = () => {
-    return api('/private/test')
-      .then(data => {
-        makeErrorAPIToast(data.data)
-      })
-      .catch((err: { data: string }) => {
-        makeErrorAPIToast(err.data)
-      })
-  }
-
   const login = async (payload: AuthZodSchemaType) => {
     return api('/auth/login', {
       method: 'POST',
@@ -42,6 +32,5 @@ export const useAuthStore = defineStore('auth', () => {
     isAuthenticated,
     login,
     register,
-    test,
   }
 })

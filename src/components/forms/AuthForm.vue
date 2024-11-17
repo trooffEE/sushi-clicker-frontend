@@ -70,7 +70,6 @@ import { useForm } from 'vee-validate'
 import { authZodSchema } from './validation/auth';
 import { useAuthStore } from '@/stores/auth';
 
-
 const isRegisterMode = ref(false);
 const switchIsRegisterMode = () => isRegisterMode.value = !isRegisterMode.value;
 const texts = computed(() => {
@@ -102,9 +101,5 @@ const authFn = computed(() => isRegisterMode.value ? aStore.register : aStore.lo
 
 const onSubmit = handleSubmit(async (values) => {
   await authFn.value(values)
-
-  setTimeout(async () => {
-    await aStore.test();
-  }, 2500);
 })
 </script>

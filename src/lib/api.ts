@@ -13,7 +13,6 @@ const APIHeadersDefault = {
 }
 
 let isTokenRequestInProgress = false
-const pendingRequests = []
 
 export const api = ofetch.create({
   baseURL: APIBaseUrlDefault,

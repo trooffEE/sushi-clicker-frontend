@@ -21,7 +21,7 @@ export const api = ofetch.create({
   onRequest({ options }) {
     options.headers.set(
       'Authorization',
-      'Bearer ' + localStorage.getItem('token'),
+      'Bearer ' + localStorage.getItem('access-token'),
     )
   },
   onResponseError(_) {
@@ -40,9 +40,11 @@ export const api = ofetch.create({
         baseURL: _.options.baseURL,
         credentials: _.options.credentials,
       })
-        .then(response => {
-          localStorage.setItem('token', response.AccessToken)
-        })
+        .then(response =>
+          localStorage.setItem('access-token', response.AccessToken),
+        )
+        // if error - we force to reload client app, because - refresh token wasn't able to proved access token
+        .catch(() => (window.location.href = '/auth'))
         .finally(() => (isTokenRequestInProgress = false))
     }
   },

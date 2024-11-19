@@ -14,11 +14,10 @@ export const useAuthStore = defineStore('auth', () => {
       body: payload,
     })
       .then(data => {
-        localStorage.setItem('token', data.AccessToken)
+        localStorage.setItem('access-token', data.AccessToken)
+        isAuthenticated.value = true
       })
-      .catch((err: { data: string }) => {
-        makeErrorAPIToast(err.data)
-      })
+      .catch((err: { data: string }) => makeErrorAPIToast(err.data))
   }
 
   const register = async (payload: AuthZodSchemaType) => {

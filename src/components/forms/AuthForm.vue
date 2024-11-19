@@ -69,6 +69,7 @@ import { toTypedSchema } from '@vee-validate/zod'
 import { useForm } from 'vee-validate'
 import { authZodSchema } from './validation/auth';
 import { useAuthStore } from '@/stores/auth';
+import { useRouter } from 'vue-router';
 
 const isRegisterMode = ref(false);
 const switchIsRegisterMode = () => isRegisterMode.value = !isRegisterMode.value;
@@ -97,9 +98,13 @@ const formSchema = toTypedSchema(authZodSchema.refine((check) => {
 const { handleSubmit } = useForm({ validationSchema: formSchema })
 
 const aStore = useAuthStore();
+const router = useRouter();
 const authFn = computed(() => isRegisterMode.value ? aStore.register : aStore.login);
 
 const onSubmit = handleSubmit(async (values) => {
-  await authFn.value(values)
+  authFn.value(values)
+    .then(() => {
+      router.replace('/')
+    })
 })
 </script>

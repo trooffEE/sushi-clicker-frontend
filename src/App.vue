@@ -1,12 +1,9 @@
 <template>
   <div class="dark relative">
-    <Header v-if="aStore.isAuthenticated" />
     <div class="application page-container">
       <RouterView />
     </div>
-    <div class="bg-purple-100/20 absolute inset-0 w-full h-full z-50">
-      <img :src="SVGTest" width="20px" height="20px" />
-    </div>
+    <LoaderOverlay :is-visible="lStore.isLoading" />
   </div>
   <Toaster />
 </template>
@@ -15,15 +12,14 @@
 import { watch } from 'vue';
 import { RouterView } from 'vue-router'
 import Toaster from '@/components/ui/toast/Toaster.vue'
-import Header from '@/components/page/header/Header.vue';
-import SVGTest from './assets/images/svg/loader.svg'
+import LoaderOverlay from '@/components/ui/custom/LoaderOverlay.vue';
 
-import { useAuthStore } from '@/stores/auth';
-import { useToastStore } from '@/stores/toast';
 import { toast } from '@/components/ui/toast';
+import { useToastStore } from '@/stores/toast';
+import { useLoadingStore } from '@/stores/loading';
 
-const aStore = useAuthStore();
 const tStore = useToastStore();
+const lStore = useLoadingStore();
 
 watch(() => tStore.visibilityTrigger, () => toast(tStore.toast))
 </script>

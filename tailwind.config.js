@@ -14,6 +14,9 @@ module.exports = {
   ],
 
   theme: {
+    fontFamily: {
+      body: ["'Montserrat'", '"sans-serif"'],
+    },
     container: {
       center: true,
       padding: '2rem',

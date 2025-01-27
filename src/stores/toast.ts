@@ -6,7 +6,7 @@ import type { Ref } from 'vue'
 type StoreState = {
   toast: Ref<Toast>
   visibilityTrigger: Ref<boolean>
-  makeErrorAPIToast: (data: string) => void
+  makeErrorToast: (title: string, message?: string) => void
 }
 
 export const useToastStore = defineStore('toast', (): StoreState => {
@@ -17,19 +17,22 @@ export const useToastStore = defineStore('toast', (): StoreState => {
     description: '',
   })
 
-  const makeErrorAPIToast = (data: string) => {
+  const makeErrorToast = (
+    message: string,
+    title: string = 'Something went wrong!',
+  ) => {
     toast.value = {
       variant: 'destructive',
-      title: 'Something went wrong on the Backend! ⚠️',
+      title: `${title}`,
       description: h(
         'div',
-        { class: 'mt-2 w-[340px] text-sm rounded-md bg-red-950 p-4' },
-        [h('code', { class: 'text-white' }, JSON.stringify(data, null, 2))],
+        { class: 'mt-2 w-[340px] text-sm rounded-md p-4' },
+        [h('p', { class: 'text-white' }, JSON.stringify(message, null, 2))],
       ),
     }
 
     visibilityTrigger.value = !visibilityTrigger.value
   }
 
-  return { toast, visibilityTrigger, makeErrorAPIToast }
+  return { toast, visibilityTrigger, makeErrorToast }
 })

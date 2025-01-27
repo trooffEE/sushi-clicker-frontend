@@ -3,6 +3,7 @@ import { useLoadingStore } from '@/stores/loading'
 import { ofetch } from 'ofetch'
 import { defineStore } from 'pinia'
 import { useToastStore } from './toast'
+import type { Response } from '@/types/response'
 
 export enum HTTP_STATUS_CODE {
   ENTITY_CONFLUCTED = 409,
@@ -35,6 +36,9 @@ export const useApiStore = defineStore('api', () => {
     onResponse() {
       lStore.decLoadingCounter()
     },
+    onRequestError() {
+      lStore.decLoadingCounter()
+    },
     onResponseError(_) {
       lStore.decLoadingCounter()
 
@@ -48,21 +52,24 @@ export const useApiStore = defineStore('api', () => {
         !isTokenRequestInProgress.value
       ) {
         isTokenRequestInProgress.value = true
-        ofetch('/auth/refresh-token', {
+        ofetch<Response<{ AccessToken: string }>>('/auth/refresh-token', {
           headers: _.options.headers,
           baseURL: _.options.baseURL,
           credentials: _.options.credentials,
         })
-          .then(response =>
-            localStorage.setItem('access-token', response.AccessToken),
-          )
+          .then(response => {
+            localStorage.setItem('access-token', response.Payload.AccessToken)
+          })
           // if error - we force to reload client app, because - refresh token wasn't able to proved access token
-          .catch(() => (window.location.href = '/auth'))
+          .catch(() => {
+            localStorage.setItem('access-token', '')
+            window.location.href = '/auth'
+          })
           .finally(() => (isTokenRequestInProgress.value = false))
       }
 
       if (_.response.status !== HTTP_STATUS_CODE.TOKEN_EXPIRED) {
-        uStore.makeErrorAPIToast(_.response._data)
+        uStore.makeErrorToast(_.response._data)
       }
     },
     retryStatusCodes: [HTTP_STATUS_CODE.TOKEN_EXPIRED],

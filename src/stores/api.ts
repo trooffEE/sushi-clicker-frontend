@@ -22,8 +22,6 @@ export const useApiStore = defineStore('api', () => {
   const uStore = useToastStore()
   const isTokenRequestInProgress = ref(false)
 
-  const ignoreInternalRefresh = { 'ignore-internal-refresh': true }
-
   const api = ofetch.create({
     baseURL: APIBaseUrlDefault,
     headers: APIHeadersDefault,
@@ -83,6 +81,5 @@ export const useApiStore = defineStore('api', () => {
 
   return {
     api,
-    ignoreInternalRefresh,
   }
 })

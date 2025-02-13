@@ -30,7 +30,7 @@ export const useAuthStore = defineStore('auth', () => {
   const refresh = async () => {
     return (
       aStore
-        .api('/auth/refresh-token', { params: aStore.ignoreInternalRefresh })
+        .api('/auth/refresh-token')
         .then(response => {
           console.log(response)
           localStorage.setItem('access-token', response.Payload.AccessToken)

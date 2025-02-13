@@ -1,6 +1,7 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import HomeView from '../views/HomeView.vue'
 import AuthView from '@/views/AuthView.vue'
+import DashboardPage from '@/pages/Dashboard.vue'
 import { useAuthStore } from '@/stores/auth'
 import { useToastStore } from '@/stores/toast'
 
@@ -11,6 +12,7 @@ const router = createRouter({
       path: '/',
       name: 'home',
       component: HomeView,
+      children: [{ path: '', component: DashboardPage }],
     },
     {
       path: '/auth',
@@ -20,7 +22,7 @@ const router = createRouter({
   ],
 })
 
-router.beforeEach(async from => {
+router.beforeEach(async (from, to) => {
   const aStore = useAuthStore()
   const tStore = useToastStore()
 
@@ -34,7 +36,7 @@ router.beforeEach(async from => {
     return
   }
 
-  if (aStore.isAuthenticated && from.redirectedFrom?.name !== 'home') {
+  if (aStore.isAuthenticated && from.name === 'auth') {
     return { name: 'home' }
   }
 })

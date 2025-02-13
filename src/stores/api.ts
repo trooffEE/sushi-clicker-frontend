@@ -22,6 +22,8 @@ export const useApiStore = defineStore('api', () => {
   const uStore = useToastStore()
   const isTokenRequestInProgress = ref(false)
 
+  const ignoreInternalRefresh = { 'ignore-internal-refresh': true }
+
   const api = ofetch.create({
     baseURL: APIBaseUrlDefault,
     headers: APIHeadersDefault,
@@ -43,7 +45,9 @@ export const useApiStore = defineStore('api', () => {
       lStore.decLoadingCounter()
 
       const isLoginRequest = _.options.baseURL + '/auth/login' === _.request
-      if (isLoginRequest) {
+      const isRefreshToken =
+        _.options.baseURL + '/auth/refresh-token' === _.request
+      if (isLoginRequest || isRefreshToken) {
         return
       }
 
@@ -79,5 +83,6 @@ export const useApiStore = defineStore('api', () => {
 
   return {
     api,
+    ignoreInternalRefresh,
   }
 })

@@ -27,9 +27,27 @@ export const useAuthStore = defineStore('auth', () => {
     })
   }
 
+  const refresh = async () => {
+    return (
+      aStore
+        .api('/auth/refresh-token', { params: aStore.ignoreInternalRefresh })
+        .then(response => {
+          console.log(response)
+          localStorage.setItem('access-token', response.Payload.AccessToken)
+        })
+        // if error - we force to reload client app, because - refresh token wasn't able to proved access token
+        .catch(error => {
+          console.log(error)
+          localStorage.setItem('access-token', '')
+          window.location.href = '/auth'
+        })
+    )
+  }
+
   return {
     isAuthenticated,
     login,
     register,
+    refresh,
   }
 })

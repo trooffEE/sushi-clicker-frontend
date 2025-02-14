@@ -5,20 +5,43 @@
     @mouseenter="changeWithTimeout(() => (isHovered = true))"
     @mouseleave="changeWithTimeout(() => (isHovered = false))"
   >
-    <RouterLink class="button py-2" to="/">
-      <Icon class="w-10 h-10" icon="game-icons:sushis" />
+    <RouterLink
+      class="flex items-center transition-all duration-200 justify-center py-2 mb-8 hover:text-gray-400 focus:bg-gray-800"
+      to="/"
+    >
+      <span
+        class="menu-item-text heading text-md uppercase"
+        v-text="'sushi-clicker'"
+      />&nbsp;🍣
     </RouterLink>
 
     <RouterLink
-      v-for="(item, i) in menuItems"
-      class="transition-all duration-200 px-4 py-2 w-full flex gap-2 items-center rounded-sm hover:bg-gray-800"
-      :class="{ 'justify-center': !isHovered }"
+      v-for="(item, i) in upperMenuItems"
+      class="menu-item transition-all duration-200 px-4 py-2 w-full flex items-center gap-2 rounded-sm hover:bg-gray-800 focus:bg-gray-800"
       :to="item.to"
       :key="i"
     >
-      <Icon class="w-6 h-6 flex-nowrap flex-shrink-0" :icon="item.icon" />
-      <span v-if="isHovered" v-html="item.name" />
+      <Icon
+        class="w-7 h-7 transition-all duration-200 flex-nowrap flex-shrink-0"
+        :icon="item.icon"
+      />
+      <span class="menu-item-text" v-html="item.name" />
     </RouterLink>
+
+    <div class="mt-auto flex flex-col gap-4">
+      <RouterLink
+        v-for="(item, i) in bottomMenuItems"
+        class="menu-item transition-all duration-200 px-4 py-2 w-full flex items-center gap-2 rounded-sm hover:bg-gray-800 focus:bg-gray-800"
+        :to="item.to"
+        :key="i"
+      >
+        <Icon
+          class="w-7 h-7 transition-all duration-200 flex-nowrap flex-shrink-0"
+          :icon="item.icon"
+        />
+        <span class="menu-item-text" v-html="item.name" />
+      </RouterLink>
+    </div>
   </aside>
 </template>
 
@@ -37,14 +60,25 @@ const changeWithTimeout = (callback: any) => {
 
   timeoutId = setTimeout(() => {
     callback()
-  }, 160)
+  }, 150)
 }
 
-const menuItems = [
-  { name: 'Settings', icon: 'iconamoon:settings-thin', to: '/' },
-  { name: 'Text text 1', icon: 'iconamoon:settings-thin', to: '/' },
-  { name: 'Text text 2', icon: 'iconamoon:settings-thin', to: '/' },
-  { name: 'Achivements', icon: 'iconamoon:settings-thin', to: '/' },
+const upperMenuItems = [
+  {
+    name: 'Game',
+    icon: 'mynaui:click',
+    to: '/game',
+  },
+  {
+    name: 'Achievements',
+    icon: 'bitcoin-icons:star-outline',
+    to: '/achievements',
+  },
+]
+
+const bottomMenuItems = [
+  { name: 'Profile', icon: 'iconamoon:profile-circle-thin', to: '/profile' },
+  { name: 'Settings', icon: 'iconamoon:settings-thin', to: '/settings' },
 ]
 </script>
 
@@ -55,7 +89,23 @@ aside {
 
   &._isHovered,
   &:hover {
-    max-width: 200px;
+    max-width: 210px;
+  }
+
+  .menu-item-text {
+    display: inline-block;
+  }
+
+  &:not(._isHovered) .menu-item {
+    justify-content: center;
+  }
+
+  &:not(._isHovered) .menu-item-text {
+    display: none;
+  }
+
+  &:hover .menu-item {
+    justify-content: start;
   }
 }
 

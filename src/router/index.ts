@@ -1,7 +1,11 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import HomeView from '../views/HomeView.vue'
 import AuthView from '@/views/AuthView.vue'
-import DashboardPage from '@/pages/Dashboard.vue'
+import HomePage from '@/pages/Home.vue'
+import ProfilePage from '@/pages/Profile.vue'
+import SettingsPage from '@/pages/Settings.vue'
+import AchievementsPage from '@/pages/Achievements.vue'
+import GamePage from '@/pages/Game.vue'
 import { useAuthStore } from '@/stores/auth'
 import { useToastStore } from '@/stores/toast'
 
@@ -12,7 +16,13 @@ const router = createRouter({
       path: '/',
       name: 'home',
       component: HomeView,
-      children: [{ path: '', component: DashboardPage }],
+      children: [
+        { path: '', component: HomePage },
+        { path: '/game', component: GamePage },
+        { path: '/settings', component: SettingsPage },
+        { path: '/achievements', component: AchievementsPage },
+        { path: '/profile', component: ProfilePage },
+      ],
     },
     {
       path: '/auth',

@@ -17,9 +17,13 @@ import LoaderOverlay from '@/components/ui/custom/LoaderOverlay.vue'
 import { toast } from '@/components/ui/toast'
 import { useToastStore } from '@/stores/toast'
 import { useLoadingStore } from '@/stores/loading'
+import { useAuthStore } from '@/stores/auth'
 
 const tStore = useToastStore()
 const lStore = useLoadingStore()
+
+const aStore = useAuthStore()
+aStore.refresh()
 
 watch(
   () => tStore.visibilityTrigger,

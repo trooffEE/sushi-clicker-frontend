@@ -36,8 +36,8 @@ export const useToastStore = defineStore('toast', (): StoreState => {
 		toast.value = {
 			variant: 'destructive',
 			title: `${title}`,
-			description: h('div', { class: 'mt-2 w-[340px] text-sm rounded-md p-4' }, [
-				h('p', { class: 'text-white' }, JSON.stringify(message, null, 2)),
+			description: h('div', { class: 'mt-2 w-[340px] text-sm rounded-md' }, [
+				h('p', { class: 'text-white' }, JSON.stringify(message, null, 2) + ' 💔'),
 			]),
 		}
 

@@ -43,6 +43,10 @@ export const useApiStore = defineStore('api', () => {
 			const isLoginRequest = `${_.options.baseURL}${endpoint.auth.login}` === _.request
 			const isRefreshToken = `${_.options.baseURL}${endpoint.auth.refreshToken}` === _.request
 
+			if (!isRefreshToken) {
+				uStore.makeErrorToast('', _.response._data.Reason)
+			}
+
 			if (isLoginRequest || isRefreshToken) {
 				return
 			}
@@ -63,10 +67,6 @@ export const useApiStore = defineStore('api', () => {
 						}
 					})
 					.finally(() => (isTokenRequestInProgress.value = false))
-			}
-
-			if (_.response.status !== HTTP_STATUS_CODE.TOKEN_EXPIRED) {
-				uStore.makeErrorToast('', _.response._data.Reason)
 			}
 		},
 		retryStatusCodes: [HTTP_STATUS_CODE.TOKEN_EXPIRED],

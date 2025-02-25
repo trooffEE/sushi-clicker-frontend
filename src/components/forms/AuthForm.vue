@@ -98,7 +98,7 @@ const formSchema = toTypedSchema(
 		},
 	),
 )
-const { handleSubmit, resetForm } = useForm({ validationSchema: formSchema })
+const { handleSubmit, resetField } = useForm({ validationSchema: formSchema })
 
 const aStore = useAuthStore()
 const router = useRouter()
@@ -110,12 +110,13 @@ const onSubmit = handleSubmit(async (values) => {
 		.value(values)
 		.then(() => {
 			const title = isRegisterMode.value ? 'Thank you for registration!' : 'Welcome back!'
-			const descrption = isRegisterMode.value ? "You can now safely surf to find your best sushi's!" : '<3'
+			const descrption = isRegisterMode.value ? "You can now safely surf to find your best sushi's! <3" : '<3'
 			uStore.makeSuccessToast(title, descrption)
 			router.replace('/')
 		})
 		.catch(() => {
-			resetForm()
+			resetField('password')
+			resetField('confirmPassword')
 			focused.value = true
 		})
 })

@@ -3,46 +3,47 @@ import { defineStore } from 'pinia'
 import { ref } from 'vue'
 import { useApiStore } from './api'
 import type { Response } from '@/types/response'
+import { clearAccessToken, hasAccessToken, saveAccessToken } from '@/lib/accessToken'
+import { endpoint } from '@/api/endpoints'
 
 export const useAuthStore = defineStore('auth', () => {
 	const aStore = useApiStore()
-	const isAuthenticated = ref(Boolean(localStorage.getItem('access-token')))
+	const isAuthenticated = ref(Boolean(hasAccessToken()))
 
 	const login = async (payload: AuthZodSchemaType) => {
 		return aStore
-			.api<Response<{ AccessToken: string }>>('/auth/login', {
+			.api<Response<{ AccessToken: string }>>(endpoint.auth.login, {
 				method: 'POST',
 				body: payload,
 			})
 			.then((data) => {
-				localStorage.setItem('access-token', data.Payload.AccessToken)
+				saveAccessToken(data.Payload.AccessToken)
 				isAuthenticated.value = true
 			})
 	}
 
 	const register = async (payload: AuthZodSchemaType) => {
-		return aStore.api('/auth/register', {
-			method: 'POST',
-			body: payload,
-		})
+		return aStore
+			.api<Response<{ AccessToken: string }>>(endpoint.auth.register, {
+				method: 'POST',
+				body: payload,
+			})
+			.then((data) => {
+				saveAccessToken(data.Payload.AccessToken)
+				isAuthenticated.value = true
+			})
 	}
 
 	const refresh = async () => {
-		return (
-			aStore
-				.api('/auth/refresh-token')
-				.then((response) => {
-					console.log(response)
-					localStorage.setItem('access-token', response.Payload.AccessToken)
-				})
-				// if error - we force to reload client app, because - refresh token wasn't able to proved access token
-				.catch(() => {
-					localStorage.setItem('access-token', '')
-					if (window.location.pathname !== '/auth') {
-						window.location.href = '/auth'
-					}
-				})
-		)
+		return aStore
+			.api('/auth/refresh-token')
+			.then((response) => saveAccessToken(response.Payload.AccessToken))
+			.catch(() => {
+				clearAccessToken()
+				if (window.location.pathname !== '/auth') {
+					window.location.href = '/auth'
+				}
+			})
 	}
 
 	return {

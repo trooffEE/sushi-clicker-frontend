@@ -1,15 +1,15 @@
 <template>
-  <div class="dark relative">
-    <div class="application page-container">
-      <RouterView />
-    </div>
-    <LoaderOverlay :is-visible="lStore.isLoading" />
-  </div>
-  <Toaster />
+	<div class="dark relative">
+		<div class="application page-container">
+			<RouterView />
+		</div>
+		<LoaderOverlay :is-visible="lStore.isLoading" />
+	</div>
+	<Toaster />
 </template>
 
 <script setup lang="ts">
-import { watch } from 'vue'
+import { onMounted, watch } from 'vue'
 import { RouterView } from 'vue-router'
 import Toaster from '@/components/ui/toast/Toaster.vue'
 import LoaderOverlay from '@/components/ui/custom/LoaderOverlay.vue'
@@ -23,10 +23,10 @@ const tStore = useToastStore()
 const lStore = useLoadingStore()
 
 const aStore = useAuthStore()
-aStore.refresh()
+onMounted(() => aStore.refresh())
 
 watch(
-  () => tStore.visibilityTrigger,
-  () => toast(tStore.toast),
+	() => tStore.visibilityTrigger,
+	() => toast(tStore.toast),
 )
 </script>

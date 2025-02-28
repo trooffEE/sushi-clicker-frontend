@@ -1,9 +1,6 @@
 <template>
 	<div>
-		<div
-			class="transition-all rotating-sushi relative active:scale-90 p-10 flex items-center justify-center"
-			@click="onClick"
-		>
+		<div class="transition-all rotating-sushi relative p-10 flex items-center justify-center" @click="onClick">
 			<div class="sushi animate-spin-slow w-[300px] h-[300px] sm:w-[500px] sm:h-[500px]" />
 
 			<transition-group name="fade" tag="div">

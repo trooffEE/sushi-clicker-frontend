@@ -1,6 +1,6 @@
 <template>
 	<div class="min-h-screen container flex flex-col justify-center items-center">
-		<h1 class="heading md:text-5xl text-3xl mb-12">sushi-clicker🍣</h1>
+		<h1 class="heading md:text-5xl text-3xl mb-8 sm:mb-12">sushi-clicker🍣</h1>
 		<div class="w-full max-w-[600px] flex justify-center">
 			<AuthForm />
 		</div>

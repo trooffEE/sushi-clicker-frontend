@@ -106,6 +106,7 @@ const uStore = useToastStore()
 const authFn = computed(() => (isRegisterMode.value ? aStore.register : aStore.login))
 
 const onSubmit = handleSubmit(async (values) => {
+	console.log('test', values)
 	authFn
 		.value(values)
 		.then(() => {

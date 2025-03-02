@@ -22,7 +22,7 @@
 import confetti from 'canvas-confetti'
 import dayjs from 'dayjs'
 import type { Dayjs } from 'dayjs'
-import { onBeforeUnmount, ref } from 'vue'
+import { onBeforeUnmount, ref, computed, watch } from 'vue'
 
 const emit = defineEmits(['sendWsMessage'])
 
@@ -34,9 +34,28 @@ type Point = {
 
 const POINT_QUEUE_SIZE = 12
 const GAME_TICK = 50
+const GAME_IDLE_TIMEOUT = 1000 * 2
 const pointQueue = ref<Point[]>([])
+const clickCounter = ref(0)
+const clickCounterPrev = ref(0)
+
+const ticksActive = ref(0)
+const isGameIdle = ref(true)
+const averageClicksPerSecond = ref(0)
 
 const intervalId = setInterval(() => {
+	if (!isGameIdle.value) {
+		ticksActive.value++
+
+		if (ticksActive.value % 20 === 0) {
+			averageClicksPerSecond.value = clickCounter.value / ((ticksActive.value * GAME_TICK) / 1000)
+		}
+	}
+
+	if (clickCounter.value - clickCounterPrev.value) {
+		clickCounterPrev.value = clickCounter.value
+	}
+
 	if (pointQueue.value.length === 0) return
 
 	if (pointQueue.value[0].disappearTime.diff(dayjs(), 'milliseconds') <= 0) {
@@ -44,12 +63,35 @@ const intervalId = setInterval(() => {
 	}
 }, GAME_TICK)
 
+const isALotOfClicksPerSecond = computed(() => {
+	return averageClicksPerSecond.value > 5
+})
+
 onBeforeUnmount(() => {
 	confetti.reset()
 	clearInterval(intervalId)
 })
 
+watch(
+	() => isGameIdle.value,
+	(value) => {
+		if (value) {
+			averageClicksPerSecond.value = 0
+			ticksActive.value = 0
+		}
+	},
+)
+
+const gameIdleTimeoutId = ref<NodeJS.Timeout | null>(null)
 const onClick = (event: MouseEvent) => {
+	clickCounter.value++
+
+	if (gameIdleTimeoutId.value) clearTimeout(gameIdleTimeoutId.value)
+	isGameIdle.value = false
+	gameIdleTimeoutId.value = setTimeout(() => {
+		isGameIdle.value = true
+	}, GAME_IDLE_TIMEOUT)
+
 	const xConfeti = event.clientX / window.innerWidth
 	const yConfeti = event.clientY / window.innerHeight
 
@@ -72,7 +114,9 @@ const onClick = (event: MouseEvent) => {
 	const style = `left: ${xPoint}px;top: ${yPoint}px;`
 
 	const point = createPoint(style)
+
 	addPointToScreenQueue(point)
+
 	emit('sendWsMessage', { pointsEarned: { sushi: point.value } })
 }
 
@@ -86,11 +130,23 @@ const addPointToScreenQueue = (point: Point) => {
 }
 
 const createPoint = (style: string): Point => {
+	const value = createPointValue()
+
 	return {
-		value: 1, //TODO нужно придумать, как пересчитатьыва
+		value,
 		style,
 		disappearTime: dayjs().add(2, 'seconds'),
 	}
+}
+
+const createPointValue = () => {
+	const factor = isALotOfClicksPerSecond.value ? 2 : 1
+
+	if (clickCounter.value % 10 === 0) {
+		return 5 * factor
+	}
+
+	return 1 * factor
 }
 </script>
 

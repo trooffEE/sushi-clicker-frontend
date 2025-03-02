@@ -8,12 +8,6 @@
 
 <script setup lang="ts">
 import Sidebar from '@/components/ui/custom/Sidebar/Sidebar.vue'
-import { onMounted } from 'vue'
-import { createNewWebSocketConnection } from '@/lib/socket'
-
-onMounted(() => {
-	createNewWebSocketConnection()
-})
 </script>
 
 <style scoped>

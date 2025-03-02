@@ -10,7 +10,7 @@
 					class="transition-all text-2xl font-semibold absolute mix-blend-difference point select-none"
 					:style="point.style"
 				>
-					+{{ point.pointValue }}
+					+{{ point.value }}
 				</span>
 			</transition-group>
 		</div>
@@ -24,8 +24,10 @@ import dayjs from 'dayjs'
 import type { Dayjs } from 'dayjs'
 import { onBeforeUnmount, ref } from 'vue'
 
+const emit = defineEmits(['sendWsMessage'])
+
 type Point = {
-	pointValue: number
+	value: number
 	style: string
 	disappearTime: Dayjs
 }
@@ -34,7 +36,6 @@ const POINT_QUEUE_SIZE = 12
 const GAME_TICK = 50
 const pointQueue = ref<Point[]>([])
 
-// Start game loop
 const intervalId = setInterval(() => {
 	if (pointQueue.value.length === 0) return
 
@@ -66,17 +67,18 @@ const onClick = (event: MouseEvent) => {
 
 	const target = event.currentTarget as HTMLElement
 	const rect = target.getBoundingClientRect()
-	const xPoint = event.clientX - rect.left + 30
+	const xPoint = event.clientX - rect.left + 30 // some extra value to move it a bit right
 	const yPoint = event.clientY - rect.top
+	const style = `left: ${xPoint}px;top: ${yPoint}px;`
 
-	addPointToQueue({ x: xPoint, y: yPoint })
+	const point = createPoint(style)
+	addPointToScreenQueue(point)
+	emit('sendWsMessage', { pointsEarned: { sushi: point.value } })
 }
 
-const addPointToQueue = ({ x, y }: { x: number; y: number }) => {
+const addPointToScreenQueue = (point: Point) => {
 	if (pointQueue.value.length < POINT_QUEUE_SIZE) {
-		const style = `left: ${x}px;top: ${y}px;`
-
-		pointQueue.value.push(createPoint(style))
+		pointQueue.value.push(point)
 		return
 	}
 
@@ -85,7 +87,7 @@ const addPointToQueue = ({ x, y }: { x: number; y: number }) => {
 
 const createPoint = (style: string): Point => {
 	return {
-		pointValue: 1, //TODO нужно придумать, как пересчитатьыва
+		value: 1, //TODO нужно придумать, как пересчитатьыва
 		style,
 		disappearTime: dayjs().add(2, 'seconds'),
 	}
